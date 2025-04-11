@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IWear</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        @font-face {
+            font-family: 'Headings';
+            src: url(sources/fonts/Cocogoose-Classic-ExtraBold-trial.ttf);
+        }
+
+        :root {
+            --primary-color: #387478;
+            --secondary-color: #6A9C89;
+            --light-color: #ffffff;
+            --dark-color: #000000;
+            --gray-text: #666666;
+            --light-gray: #f8f9fa;
+        }
+
+        body {
+            font-family: 'Lato', sans-serif;
+            background-color: var(--light-color);
+            height: 100%;
+        }
+
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .content-wrapper {
+            flex: 1 0 auto;
+            padding-bottom: 100px;
+        }
+
+
+        /*navigation bar*/
+        .navbar {
+            background-color: white;
+            height: 80px;
+            padding: 0.5rem;
+            font-family: 'Lato', sans-serif;
+        }
+
+        .navbar h5 {
+            font-family: 'Headings';
+        }
+
+        .navbar-brand {
+            color: #16423C;
+            font-family: 'Headings';
+            font-size: 24px;
+            font-weight: 800;
+            transition: 0.3s color;
+        }
+
+        .navbar-toggler {
+            border: none;
+            font-size: 1.25rem;
+            font-family: 'Headings';
+            font-weight: 700;
+        }
+
+        .navbar-toggler:focus,
+        .btn-close:focus {
+            box-shadow: none;
+            outline: none;
+        }
+
+        .nav-link {
+            color: #16423C;
+            font-weight: 500;
+            position: relative;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: #6A9C89;
+        }
+
+        @media (min-width: 991px) {
+            .nav-link::before {
+                content: "";
+                position: absolute;
+                bottom: 0;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 0;
+                height: 2px;
+                background-color: #C4DAD2;
+                visibility: hidden;
+                transition: 0.3s;
+
+            }
+
+            .nav-link:hover::before,
+            .nav-link:active::before {
+                width: 100%;
+                visibility: visible;
+
+            }
+        }
+
+
+        /* Card Styles*/
+        .card-container {
+            padding: 0 15px;
+            margin-top: 150px;
+        }
+
+        .card-stack {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card {
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            position: relative;
+            cursor: pointer;
+            background-color: var(--light-color);
+            padding: 0;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+        }
+
+        .card-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 1;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .card-img-container {
+            height: 180px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--light-gray);
+            padding: 1rem;
+        }
+
+        .card-img-top {
+            max-height: 150px;
+            object-fit: contain;
+        }
+
+        .card-body {
+            padding: 1rem;
+            text-align: left;
+        }
+
+        .collection-name {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--gray-text);
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-title {
+            color: var(--dark-color);
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .card-text {
+            color: var(--gray-text);
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-price {
+            color: var(--dark-color);
+            font-weight: 700;
+            font-size: 1.2rem;
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        .card-details {
+            color: var(--gray-text);
+            font-size: 0.8rem;
+            text-align: right;
+        }
+
+        /* Modal Styles */
+        .modal-header {
+            border-bottom: 1px solid #eee;
+            padding: 1rem 1.5rem;
+        }
+
+        .modal-title {
+            font-weight: 500;
+            color: var(--dark-color);
+        }
+
+        .modal-body {
+            padding: 0;
+        }
+
+        .product-details-container {
+            padding: 1.5rem;
+        }
+
+        .product-details-img {
+            max-width: 100%;
+            height: auto;
+            object-fit: contain;
+            padding: 1.5rem;
+            background-color: var(--light-gray);
+            border-radius: 10px;
+            align-items: center;
+        }
+
+        .modal-product-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .modal-product-price {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 1rem;
+            font-weight: 500;
+            margin: 1.5rem 0 0.75rem 0;
+        }
+
+        .material-badge {
+            display: inline-block;
+            background-color: #f0f0f0;
+            color: var(--dark-color);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            margin: 0.25rem 0.5rem 0.25rem 0;
+            font-size: 0.85rem;
+        }
+
+        .dimensions-container {
+            margin: 1rem 0;
+        }
+
+        .dimension-label {
+            color: var(--gray-text);
+            font-size: 0.8rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .dimension-value {
+            color: var(--dark-color);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .lens-options {
+            margin: 1rem 0;
+        }
+
+        .form-check {
+            margin-bottom: 0.5rem;
+        }
+
+        .form-check-input:checked {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .action-buttons {
+            margin-top: 2rem;
+        }
+
+        .btn-cart,
+        .btn-buy {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 4px;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-cart {
+            background-color: var(--primary-color);
+            border: none;
+            color: white;
+        }
+
+        .btn-buy {
+            background-color: var(--primary-color);
+            border: none;
+            color: white;
+        }
+
+        .btn-cart:hover,
+        .btn-buy:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+            background-color: #6A9C89;
+            color: #ffffff;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- NavBar BootStrap -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand me-auto" href="index.html">IWear</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar"
+                aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar"
+                aria-labelledby="offcanvasNavbarLabel">
+                <div class="offcanvas-header">
+                    <h5 class="offcanvas-title" id="offcanvasNavbarLabel">IWear</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+
+                <div class="offcanvas-body">
+                    <ul class="navbar-nav justify-content-center flex-grow-1 pe-3">
+                        <li class="nav-item">
+                            <a class="nav-link mx-lg-2 active" aria-current="page" href="index.html">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link mx-lg-2" href="shop.html">Shop</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link mx-lg-2" href="cart.html">Cart</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link mx-lg-2" href="about.html">About Us</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link mx-lg-2" href="contact.html">Contact Us</a>
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+    </nav>
+
+    <div class="content-wrapper">
+        <!--Product Section-->
+        <div class="container">
+            <div class="card-container">
+                <div class="card-stack">
+                    <div class="card" data-id="1" data-bs-toggle="modal" data-bs-target="#productModal"
+                        data-product="Titanium Oval Frame">
+                        <div class="card-img-container">
+                            <span class="badge bg-danger card-badge">25% OFF</span>
+                            <img src="sources/images/product6.png" class="card-img-top" alt="Titanium Oval Frame">
+                        </div>
+                        <div class="card-body">
+                            <span class="collection-name">PREMIUM COLLECTION</span>
+                            <h5 class="card-title">Titanium Oval Glasses</h5>
+                            <p class="card-text">Lightweight titanium frames with axolotl style.</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="card-price">Php149.99</span>
+                                <small class="card-details">Click for details</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card" data-id="2" data-bs-toggle="modal" data-bs-target="#productModal"
+                        data-product="Modern Square">
+                        <div class="card-img-container">
+                            <span class="badge bg-success card-badge">NEW</span>
+                            <img src="sources/images/product1.png" class="card-img-top" alt="Modern Square Glasses">
+                        </div>
+                        <div class="card-body">
+                            <span class="collection-name">URBAN SERIES</span>
+                            <h5 class="card-title">Modern Square</h5>
+                            <p class="card-text">Contemporary square frames with blue light filtering lenses.</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="card-price">Php129.99</span>
+                                <small class="card-details">Click for details</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card" data-id="3" data-bs-toggle="modal" data-bs-target="#productModal"
+                        data-product="Vintage Round">
+                        <div class="card-img-container">
+                            <span class="badge bg-warning card-badge">BESTSELLER</span>
+                            <img src="sources/images/product2.png" class="card-img-top" alt="Vintage Round Glasses">
+                        </div>
+                        <div class="card-body">
+                            <span class="collection-name">CLASSIC REVIVAL</span>
+                            <h5 class="card-title">Vintage Round</h5>
+                            <p class="card-text">Retro-inspired round frames with premium acetate material.</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="card-price">Php119.99</span>
+                                <small class="card-details">Click for details</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card" data-id="4" data-bs-toggle="modal" data-bs-target="#productModal"
+                        data-product="Cat Eye Elegant">
+                        <div class="card-img-container">
+                            <span class="badge bg-info card-badge">LIMITED</span>
+                            <img src="sources/images/product4.png" class="card-img-top" alt="Cat Eye Glasses">
+                        </div>
+                        <div class="card-body">
+                            <span class="collection-name">WOMEN'S DESIGNER</span>
+                            <h5 class="card-title">Cat Eye Elegant</h5>
+                            <p class="card-text">Sophisticated metallic cat-eye design.</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="card-price">Php159.99</span>
+                                <small class="card-details">Click for details</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card" data-id="5" data-bs-toggle="modal" data-bs-target="#productModal"
+                        data-product="Aviator Classic">
+                        <div class="card-img-container">
+                            <span class="badge bg-primary card-badge">POPULAR</span>
+                            <img src="sources/images/product9.png" class="card-img-top" alt="Aviator Classic Glasses">
+                        </div>
+                        <div class="card-body">
+                            <span class="collection-name">TIMELESS SERIES</span>
+                            <h5 class="card-title">Aviator Classic</h5>
+                            <p class="card-text">Iconic aviator design with silver-toned metal frame.</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="card-price">Php139.99</span>
+                                <small class="card-details">Click for details</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card" data-id="6" data-bs-toggle="modal" data-bs-target="#productModal"
+                        data-product="Geometric Hexagon">
+                        <div class="card-img-container">
+                            <span class="badge bg-secondary card-badge">TRENDING</span>
+                            <img src="sources/images/product8.png" class="card-img-top" alt="Geometric Hexagon Glasses">
+                        </div>
+                        <div class="card-body">
+                            <span class="collection-name">AVANT-GARDE</span>
+                            <h5 class="card-title">Geometric Hexagon</h5>
+                            <p class="card-text">Bold hexagonal frames with thin metal construction.</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="card-price">Php145.99</span>
+                                <small class="card-details">Click for details</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card" data-id="7" data-bs-toggle="modal" data-bs-target="#productModal"
+                        data-product="Goggles Glasses">
+                        <div class="card-img-container">
+                            <span class="badge bg-dark card-badge">PREMIUM</span>
+                            <img src="sources/images/product7.png" class="card-img-top" alt="Goggles Glasses">
+                        </div>
+                        <div class="card-body">
+                            <span class="collection-name">EXECUTIVE LINE</span>
+                            <h5 class="card-title">Goggles Glasses</h5>
+                            <p class="card-text">Underwater style design with titanium temples.</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="card-price">Php169.99</span>
+                                <small class="card-details">Click for details</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card" data-id="8" data-bs-toggle="modal" data-bs-target="#productModal"
+                        data-product="Oversized Square">
+                        <div class="card-img-container">
+                            <span class="badge bg-danger card-badge">35% OFF</span>
+                            <img src="sources/images/product3.png" class="card-img-top" alt="Oversized Square Glasses">
+                        </div>
+                        <div class="card-body">
+                            <span class="collection-name">FASHION FORWARD</span>
+                            <h5 class="card-title">Oversized Square</h5>
+                            <p class="card-text">Bold oversized frames with thick acetate construction.</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="card-price">Php124.99</span>
+                                <small class="card-details">Click for details</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card" data-id="8" data-bs-toggle="modal" data-bs-target="#productModal"
+                        data-product="Anger Tears">
+                        <div class="card-img-container">
+                            <span class="badge bg-info card-badge">LIMITED</span>
+                            <img src="sources/images/limited1.png" class="card-img-top" alt="Anger Tears Glasses">
+                        </div>
+                        <div class="card-body">
+                            <span class="collection-name">FASHION FORWARD</span>
+                            <h5 class="card-title">Anger Tears</h5>
+                            <p class="card-text">Bold abstract shaped frameless fashionable eyeglasses.</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="card-price">Php299.99</span>
+                                <small class="card-details">Click for details</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card" data-id="8" data-bs-toggle="modal" data-bs-target="#productModal"
+                    data-product="Square-Circle">
+                    <div class="card-img-container">
+                        <span class="badge bg-success card-badge">NEW</span>
+                        <img src="sources/images/limited2.png" class="card-img-top" alt="Square-Circle Glasses">
+                    </div>
+                    <div class="card-body">
+                        <span class="collection-name">FASHION FORWARD</span>
+                        <h5 class="card-title">Square-Circle</h5>
+                        <p class="card-text">Two different geometric shape in one fashionable eyeglass.</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="card-price">Php249.99</span>
+                            <small class="card-details">Click for details</small>
+                        </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Product Details Modal -->
+        <div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="productModalLabel">Product Details</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row g-0">
+                            <div class="col-md-5">
+                                <img src="sources/images/product6.png" id="modal-product-img"
+                                    class="product-details-img" alt="Product Image">
+                            </div>
+                            <div class="col-md-7">
+                                <div class="product-details-container">
+                                    <h3 id="modal-product-title" class="modal-product-title">Titanium Oval Glasses</h3>
+                                    <p id="modal-product-price" class="modal-product-price">Php149.99</p>
+
+                                    <h5 class="section-title">Materials</h5>
+                                    <div id="materials-container">
+                                        <span class="material-badge">Titanium</span>
+                                        <span class="material-badge">Acetate Tips</span>
+                                        <span class="material-badge">Silicone Nose Pads</span>
+                                    </div>
+
+                                    <h5 class="section-title">Dimensions</h5>
+                                    <div class="row dimensions-container">
+                                        <div class="col-4">
+                                            <p class="dimension-label">Lens Width</p>
+                                            <p class="dimension-value" id="lens-width">52mm</p>
+                                        </div>
+                                        <div class="col-4">
+                                            <p class="dimension-label">Bridge Width</p>
+                                            <p class="dimension-value" id="bridge-width">18mm</p>
+                                        </div>
+                                        <div class="col-4">
+                                            <p class="dimension-label">Temple Length</p>
+                                            <p class="dimension-value" id="temple-length">140mm</p>
+                                        </div>
+                                    </div>
+
+                                    <h5 class="section-title">Lens Options</h5>
+                                    <div class="lens-options">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="lensOption"
+                                                id="standardLens" checked>
+                                            <label class="form-check-label" for="standardLens">
+                                                Standard Clear Lens
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="lensOption"
+                                                id="blueLight">
+                                            <label class="form-check-label" for="blueLight">
+                                                Blue Light Filtering (+Php30)
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="lensOption"
+                                                id="transitions">
+                                            <label class="form-check-label" for="transitions">
+                                                Transitions® Lenses (+Php80)
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <div class="action-buttons">
+                                        <button class="btn btn-cart">Add to Cart</button>
+                                        <button class="btn btn-buy">Buy Now</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Get all cards
+            const cards = document.querySelectorAll('.card');
+            const modalTitle = document.getElementById('modal-product-title');
+            const modalPrice = document.getElementById('modal-product-price');
+            const productModal = document.getElementById('productModal');
+            const materialsContainer = document.getElementById('materials-container');
+            const modalImage = document.getElementById('modal-product-img');
+            const lensWidth = document.getElementById('lens-width');
+            const bridgeWidth = document.getElementById('bridge-width');
+            const templeLength = document.getElementById('temple-length');
+
+            // Product details for each item
+            const products = {
+                'Titanium Oval Frame': {
+                    title: 'Titanium Oval Glasses',
+                    price: 'Php149.99',
+                    image: 'sources/images/product6.png',
+                    materials: ['Titanium', 'Acetate Tips', 'Silicone Nose Pads'],
+                    dimensions: {
+                        lensWidth: '52mm',
+                        bridgeWidth: '18mm',
+                        templeLength: '140mm'
+                    }
+                },
+                'Modern Square': {
+                    title: 'Modern Square',
+                    price: 'Php129.99',
+                    image: 'sources/images/product1.png',
+                    materials: ['Acetate', 'Metal Hinges', 'Silicone Nose Pads'],
+                    dimensions: {
+                        lensWidth: '54mm',
+                        bridgeWidth: '17mm',
+                        templeLength: '145mm'
+                    }
+                },
+                'Vintage Round': {
+                    title: 'Vintage Round',
+                    price: 'Php119.99',
+                    image: 'sources/images/product2.png',
+                    materials: ['Premium Acetate', 'Stainless Steel', 'Adjustable Nose Pads'],
+                    dimensions: {
+                        lensWidth: '48mm',
+                        bridgeWidth: '21mm',
+                        templeLength: '142mm'
+                    }
+                },
+                'Cat Eye Elegant': {
+                    title: 'Cat Eye Elegant',
+                    price: 'Php159.99',
+                    image: 'sources/images/product4.png',
+                    materials: ['Acetate', 'Crystal Accents', 'Metal Hinges'],
+                    dimensions: {
+                        lensWidth: '51mm',
+                        bridgeWidth: '16mm',
+                        templeLength: '138mm'
+                    }
+                },
+                'Aviator Classic': {
+                    title: 'Aviator Classic',
+                    price: 'Php139.99',
+                    image: 'sources/images/product9.png',
+                    materials: ['Silver-Toned Metal', 'Adjustable Nose Pads', 'Resin Lenses'],
+                    dimensions: {
+                        lensWidth: '58mm',
+                        bridgeWidth: '14mm',
+                        templeLength: '135mm'
+                    }
+                },
+                'Geometric Hexagon': {
+                    title: 'Geometric Hexagon',
+                    price: 'Php145.99',
+                    image: 'sources/images/product8.png',
+                    materials: ['Stainless Steel', 'Titanium Finish', 'Silicone Nose Pads'],
+                    dimensions: {
+                        lensWidth: '50mm',
+                        bridgeWidth: '19mm',
+                        templeLength: '143mm'
+                    }
+                },
+                'Googles Glasses': {
+                    title: 'Googles Glasses',
+                    price: 'Php169.99',
+                    image: 'sources/images/product7.png',
+                    materials: ['Titanium Temples', 'Screw-Less Hinges', 'Polarized Lens Options'],
+                    dimensions: {
+                        lensWidth: '56mm',
+                        bridgeWidth: '16mm',
+                        templeLength: '145mm'
+                    }
+                },
+                'Oversized Square': {
+                    title: 'Oversized Square',
+                    price: 'Php124.99',
+                    image: 'sources/images/product3.png',
+                    materials: ['Premium Acetate', 'Spring Hinges', 'UV400 Protection'],
+                    dimensions: {
+                        lensWidth: '54mm',
+                        bridgeWidth: '20mm',
+                        templeLength: '148mm'
+                    }
+                },
+                'Anger Tears': {
+                    title: 'Anger Tears',
+                    price: 'Php299.99',
+                    image: 'sources/images/limited1.png',
+                    materials: ['Titanium Temples', 'Spring Hinges', 'Polarized lens Options'],
+                    dimensions: {
+                        lensWidth: '55mm',
+                        bridgeWidth: '20mm',
+                        templeLength: '148mm'
+                    }
+                },
+                'Square-Circle': {
+                    title: 'Square-Circle',
+                    price: 'Php249.99',
+                    image: 'sources/images/limited2.png',
+                    materials: ['Premium Acetate', 'Spring Hinges', 'Polarized lens Options'],
+                    dimensions: {
+                        lensWidth: '55mm',
+                        bridgeWidth: '18mm',
+                        templeLength: '145mm'
+                    }
+                }
+            };
+
+            // Function to update materials in modal
+            function updateMaterials(materials) {
+                // Clear existing materials
+                materialsContainer.innerHTML = '';
+
+                // Add new material badges
+                materials.forEach(material => {
+                    const badge = document.createElement('span');
+                    badge.className = 'material-badge';
+                    badge.textContent = material;
+                    materialsContainer.appendChild(badge);
+                });
+            }
+
+            // Function to update dimensions in modal
+            function updateDimensions(dimensions) {
+                lensWidth.textContent = dimensions.lensWidth;
+                bridgeWidth.textContent = dimensions.bridgeWidth;
+                templeLength.textContent = dimensions.templeLength;
+            }
+
+            // Modal event - set product details
+            productModal.addEventListener('show.bs.modal', function (event) {
+                // Get the card that triggered the modal
+                const card = event.relatedTarget;
+                const productName = card.getAttribute('data-product');
+                const product = products[productName];
+
+                // Update modal content
+                modalTitle.textContent = product.title;
+                modalPrice.textContent = product.price;
+                modalImage.src = product.image;
+
+                // Update materials
+                updateMaterials(product.materials);
+
+                // Update dimensions
+                updateDimensions(product.dimensions);
+            });
+
+            // Add hover effect for cards
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', function () {
+                    this.style.transform = 'translateY(-5px)';
+                    this.style.boxShadow = '0 8px 16px rgba(0, 0, 0, 0.12)';
+                });
+
+                card.addEventListener('mouseleave', function () {
+                    this.style.transform = '';
+                    this.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.08)';
+                });
+            });
+
+            function getLensAdditionalPrice(lensId) {
+                switch (lensId) {
+                    case 'blueLight':
+                        return 30;
+                    case 'transitions':
+                        return 80;
+                    default: // standardLens
+                        return 0;
+                }
+            }
+
+
+            // Add click events for "Add to Cart" button
+            document.querySelector('.btn-cart').addEventListener('click', function () {
+                const selectedProduct = modalTitle.textContent;
+                const selectedLens = document.querySelector('input[name="lensOption"]:checked');
+                const selectedLensId = selectedLens.id;
+                const selectedLensLabel = selectedLens.nextElementSibling.textContent;
+                const basePrice = parseFloat(modalPrice.textContent.replace('Php', ''));
+                const additionalFee = getLensAdditionalPrice(selectedLensId);
+                const finalPrice = basePrice + additionalFee;
+                const selectedImage = document.getElementById('modal-product-img').src;
+                const cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+                console.log(`Added to cart: ${selectedProduct} with ${selectedLensId}`);
+                alert(`Added ${selectedProduct} to your cart!`);
+
+                cart.push({
+                    name: selectedProduct,
+                    lens: selectedLensLabel,
+                    price: `Php${finalPrice.toFixed(2)}`,
+                    image: selectedImage
+                });
+
+                localStorage.setItem('cart', JSON.stringify(cart));
+
+                // Redirect to cart page
+                window.location.href = 'cart.html';
+            });
+
+
+            // Add click events for "Buy Now" button
+            document.querySelector('.btn-buy').addEventListener('click', function () {
+                const selectedProduct = modalTitle.textContent;
+                const selectedLens = document.querySelector('input[name="lensOption"]:checked');
+                const selectedLensId = selectedLens.id;
+                const selectedLensLabel = selectedLens.nextElementSibling.textContent;
+                const basePrice = parseFloat(modalPrice.textContent.replace('Php', ''));
+                const additionalFee = getLensAdditionalPrice(selectedLensId);
+                const finalPrice = basePrice + additionalFee;
+                const selectedImage = document.getElementById('modal-product-img').src;
+
+                console.log(`Buy Now: ${selectedProduct} with ${selectedLensId}`);
+                alert(`Proceeding to checkout with ${selectedProduct}!`);
+
+                const buyNowCart = [{
+                    name: selectedProduct,
+                    lens: selectedLensLabel,
+                    price: `Php${finalPrice.toFixed(2)}`,
+                    image: selectedImage
+                }];
+
+                localStorage.setItem('cart', JSON.stringify(buyNowCart));
+
+                // Redirect to checkout page
+                window.location.href = 'checkout.html';
+            });
+        });
+    </script>
+</body>
+
+</html>
