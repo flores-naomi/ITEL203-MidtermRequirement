@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>IWear - Cart</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="cart-checkout.css">
+</head>
+
+<body>
+    <!-- NavBar BootStrap -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand me-auto" href="home.html">IWear</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar"
+                aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar"
+                aria-labelledby="offcanvasNavbarLabel">
+                <div class="offcanvas-header">
+                    <h5 class="offcanvas-title" id="offcanvasNavbarLabel">IWear</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+
+                <div class="offcanvas-body">
+                    <ul class="navbar-nav justify-content-center flex-grow-1 pe-3">
+                        <li class="nav-item">
+                            <a class="nav-link mx-lg-2" href="home.html">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link mx-lg-2" href="shop.html">Shop</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link mx-lg-2 active" aria-current="page" href="cart.html">Cart</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link mx-lg-2" href="about.html">About Us</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link mx-lg-2" href="contact.html">Contact Us</a>
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+    </nav>
+
+    <!-- Cart Content -->
+    <div class="container mt-5 pt-5 cart-container">
+        <h2 class="cart-title">Your Cart</h2>
+        <div id="cart-items" class="row g-4">
+            <!-- JS will inject cart items here -->
+        </div>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <input type="checkbox" id="select-all" class="form-check-input me-2">
+                <label for="select-all" class="form-check-label">Select All</label>
+            </div>
+            <div id="cart-summary-text" class="text-muted small">
+                0 items selected | Total: ₱0.00
+            </div>
+        </div>
+
+        <div class="text-center mt-4">
+            <button id="checkout-btn" class="btn btn-checkout" disabled>Proceed to Checkout</button>
+        </div>
+        <div class="text-center mt-3">
+            <button id="delete-btn" class="btn btn-danger" disabled>Delete Selected Items</button>
+        </div>
+
+
+        <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+            <div id="deleteToast" class="toast align-items-center text-bg-danger border-0" role="alert">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        Selected items deleted from your cart.
+                    </div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto"
+                        data-bs-dismiss="toast"></button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Get cart data (or an empty array if not found)
+        const cart = JSON.parse(localStorage.getItem('cart')) || [];
+        const cartItemsContainer = document.getElementById('cart-items');
+        const checkoutBtn = document.getElementById('checkout-btn');
+        const deleteBtn = document.getElementById('delete-btn');
+        const selectAllCheckbox = document.getElementById('select-all');
+        const cartSummaryText = document.getElementById('cart-summary-text');
+        const deleteToast = new bootstrap.Toast(document.getElementById('deleteToast'));
+
+        // Helper to format price
+        function formatPrice(num) {
+            return "₱" + parseFloat(num).toFixed(2);
+        }
+
+        function getLensAdditionalPrice(lens) {
+            switch (lens) {
+                case 'Blue Light Filtering':
+                    return 30;
+                case 'Transitions® Lenses':
+                    return 80;
+                default: // Standard Clear Lens
+                    return 0;
+            }
+        }
+
+        // Update the summary text and disable/enable buttons based on selection
+        function updateSummary() {
+            const checkboxes = document.querySelectorAll('.select-item');
+            let total = 0;
+            let count = 0;
+
+            // Loop through each cart item checkbox
+            checkboxes.forEach((checkbox, index) => {
+                if (checkbox.checked) {
+                    count++;
+                    // Extract price without non-numeric characters and calculate final price
+                    const priceWithoutLens = parseFloat(cart[index].price.replace(/[^\d.-]/g, ''));
+                    const additionalFee = getLensAdditionalPrice(cart[index].lens);
+                    const finalPrice = priceWithoutLens + additionalFee;
+                    total += finalPrice;
+                }
+            });
+
+            cartSummaryText.innerText = `${count} item${count !== 1 ? 's' : ''} selected | Total: ${formatPrice(total)}`;
+            checkoutBtn.disabled = (count === 0);
+            deleteBtn.disabled = (count === 0);
+        }
+
+
+        // Render the cart items on the page
+        function renderCart() {
+            cartItemsContainer.innerHTML = '';
+
+            if (cart.length === 0) {
+                cartItemsContainer.innerHTML = '<p class="text-center">Your cart is empty.</p>';
+                checkoutBtn.disabled = true;
+                deleteBtn.disabled = true;
+                selectAllCheckbox.disabled = true;  // Nothing to select
+                return;
+            }
+
+            // If there is only one item, disable the select-all checkbox.
+            selectAllCheckbox.disabled = (cart.length < 2);
+            // Uncheck the select-all checkbox by default.
+            selectAllCheckbox.checked = false;
+
+            cart.forEach((item, index) => {
+                const priceWithoutLens = parseFloat(item.price.replace(/[^\d.-]/g, ''));
+                const additionalFee = getLensAdditionalPrice(item.lens);
+                const finalPrice = priceWithoutLens + additionalFee;
+
+                const itemHTML = `
+            <div class="col-12 col-md-6 cart-item-wrapper">
+                <div class="card cart-item">
+                    <div class="card-body d-flex flex-column flex-sm-row align-items-center">
+                        <input type="checkbox" class="form-check-input select-item" data-index="${index}">
+                        <img src="${item.image}" alt="${item.name}" class="img-fluid cart-image">
+                        <div class="cart-item-info ms-3">
+                            <h5 class="cart-item-title">${item.name}</h5>
+                            <p class="card-text">Lens: ${item.lens}</p>
+                            <p class="cart-item-price fw-bold">${formatPrice(finalPrice)}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+                cartItemsContainer.innerHTML += itemHTML;
+            });
+
+            attachCheckboxListeners();
+        }
+
+
+        // Add change event listeners to all individual checkboxes
+        function attachCheckboxListeners() {
+            const checkboxes = document.querySelectorAll('.select-item');
+
+            checkboxes.forEach(cb => {
+                cb.addEventListener('change', () => {
+                    // Update the Select All checkbox: check it only if all item checkboxes are checked.
+                    const allChecked = Array.from(checkboxes).every(c => c.checked);
+                    selectAllCheckbox.checked = allChecked;
+                    updateSummary();
+                });
+            });
+
+            updateSummary();
+        }
+
+        // Handler for the Select All checkbox
+        selectAllCheckbox.addEventListener('change', () => {
+            const checkboxes = document.querySelectorAll('.select-item');
+            checkboxes.forEach(cb => cb.checked = selectAllCheckbox.checked);
+            updateSummary();
+        });
+
+        // Checkout button handler: only navigates if at least one item is selected.
+        checkoutBtn.addEventListener('click', () => {
+            const selectedItems = [];
+            document.querySelectorAll('.select-item').forEach((cb, index) => {
+                if (cb.checked) selectedItems.push(cart[index]);
+            });
+
+            if (selectedItems.length > 0) {
+                localStorage.setItem('selectedCartItems', JSON.stringify(selectedItems));
+                window.location.href = "checkout.html";
+            }
+        });
+
+        // Delete button handler: show confirmation toast before removing items.
+        deleteBtn.addEventListener('click', () => {
+            const newCart = [];
+            document.querySelectorAll('.select-item').forEach((cb, index) => {
+                if (!cb.checked) newCart.push(cart[index]);
+            });
+
+            localStorage.setItem('cart', JSON.stringify(newCart));
+            deleteToast.show();
+            setTimeout(() => location.reload(), 1500);
+        });
+
+        // Initial render of the cart
+        renderCart();
+
+        // Modified alert handling script - add this to your cart.html file
+        document.addEventListener('DOMContentLoaded', function () {
+            // Find any alert messages
+            const alerts = document.querySelectorAll('[role="alert"]');
+            const backdrops = [];
+
+            alerts.forEach(alert => {
+                // Center the alert in the window
+                alert.style.position = 'fixed';
+                alert.style.top = '50%';
+                alert.style.left = '50%';
+                alert.style.transform = 'translate(-50%, -50%)';
+                alert.style.zIndex = '9999';
+                alert.style.maxWidth = '90%';
+                alert.style.width = 'auto';
+
+                // Create backdrop only if it doesn't already exist
+                if (!document.querySelector('.alert-backdrop')) {
+                    const backdrop = document.createElement('div');
+                    backdrop.classList.add('alert-backdrop');
+                    backdrop.style.position = 'fixed';
+                    backdrop.style.top = '0';
+                    backdrop.style.left = '0';
+                    backdrop.style.width = '100%';
+                    backdrop.style.height = '100%';
+                    backdrop.style.backgroundColor = 'rgba(0,0,0,0.5)';
+                    backdrop.style.zIndex = '9998';
+
+                    document.body.appendChild(backdrop);
+                    backdrops.push(backdrop);
+                }
+
+                // Remove backdrop when alert is closed
+                const closeBtn = alert.querySelector('.btn-close');
+                if (closeBtn) {
+                    closeBtn.addEventListener('click', function () {
+                        backdrops.forEach(backdrop => backdrop.remove());
+                    });
+                }
+
+                // Auto-remove backdrop after toast is hidden
+                if (alert.classList.contains('toast')) {
+                    alert.addEventListener('hidden.bs.toast', function () {
+                        backdrops.forEach(backdrop => backdrop.remove());
+                    });
+
+                    // Fallback timeout to ensure backdrop is removed
+                    setTimeout(() => {
+                        backdrops.forEach(backdrop => backdrop.remove());
+                    }, 1000);
+                }
+            });
+
+            // Make sure to clean up any lingering backdrops
+            document.addEventListener('click', function (e) {
+                if (!document.querySelector('[role="alert"]:not(.hide)')) {
+                    document.querySelectorAll('.alert-backdrop').forEach(el => el.remove());
+                }
+            });
+        });
+    </script>
+
+
+</body>
+
+</html>
