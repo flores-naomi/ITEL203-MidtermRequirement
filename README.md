@@ -1,7 +1,6 @@
 # ITEL203-MidtermRequirement
 Responsive website project for ITEL 203 Midterm Requirement
-
-# You must open the loading-page.html first
+You must open the loading-page.html first
 
 # IWEAR
 IWear was inspired or suggested by Stella Montesines to me when we were tasked to create an e-commerce static site before. Thus, me a human being who is in need and use eye glasses to see clearly grab that opportunity to create a website that would help people select frames and customize lens that they like through online means. This is not for a specific business rather it was imaginative but is applicable to the real-world. 
